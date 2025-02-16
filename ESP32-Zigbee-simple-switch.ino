@@ -11,10 +11,6 @@
 
 #define PIN_INPUT1 0
 #define PIN_INPUT2 1
-#define LASTSTATE 0
-#define NEWSTATE 1
-
-bool statesArray[2][2];
 
 uint8_t led = RGB_BUILTIN;  // GPIO for the LED
 uint8_t button = BOOT_PIN;  // Boot button
@@ -74,24 +70,6 @@ void setup() {
         delay(100);
     }
     Serial.println();
-}
-
-/********************* State Management *********************/
-bool changeState(int pin) {
-    if (!statesArray[pin][NEWSTATE]) {
-        initState(pin);
-    }
-    statesArray[pin][NEWSTATE] = digitalRead(pin);
-    if (statesArray[pin][NEWSTATE] != statesArray[pin][LASTSTATE]) {
-        statesArray[pin][LASTSTATE] = statesArray[pin][NEWSTATE];
-        return true;
-    }
-    return false;
-}
-
-void initState(int pin) {
-    statesArray[pin][LASTSTATE] = false;
-    statesArray[pin][NEWSTATE] = false;
 }
 
 /********************* RGB LED Functions *********************/

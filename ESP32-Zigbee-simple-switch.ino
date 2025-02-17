@@ -9,8 +9,8 @@
 #define ZIGBEE_SWITCH_ENDPOINT_1 11
 #define ZIGBEE_SWITCH_ENDPOINT_2 12
 
-#define PIN_INPUT1 0
-#define PIN_INPUT2 1
+#define PIN_INPUT1 2
+#define PIN_INPUT2 7
 
 uint8_t led = RGB_BUILTIN;  // GPIO for the LED
 uint8_t button = BOOT_PIN;  // Boot button
@@ -94,28 +94,25 @@ void identify(uint16_t time) {
     blink = !blink;
 }
 
+void handleButtonPress(int pin, bool &contact, ZigbeeContactSwitch &targetSwitch){
+
+    if (digitalRead(pin) == HIGH && !contact) {
+        targetSwitch.setOpen();
+        contact = true;
+    } else if (digitalRead(pin) == LOW && contact) {
+        targetSwitch.setClosed();
+        contact = false;
+    }
+}
+
 /********************* Loop Function *********************/
 void loop() {
+
     static bool contact1 = false;
     static bool contact2 = false;
 
-    // Check contact sensor 1
-    if (digitalRead(PIN_INPUT1) == HIGH && !contact1) {
-        zbSwitch1.setOpen();
-        contact1 = true;
-    } else if (digitalRead(PIN_INPUT1) == LOW && contact1) {
-        zbSwitch1.setClosed();
-        contact1 = false;
-    }
-
-    // Check contact sensor 2
-    if (digitalRead(PIN_INPUT2) == HIGH && !contact2) {
-        zbSwitch2.setOpen();
-        contact2 = true;
-    } else if (digitalRead(PIN_INPUT2) == LOW && contact2) {
-        zbSwitch2.setClosed();
-        contact2 = false;
-    }
+  handleButtonPress(PIN_INPUT1,contact1,zbSwitch1);
+  handleButtonPress(PIN_INPUT2,contact2,zbSwitch2);
 
     // Check button for factory reset
     if (digitalRead(button) == LOW) {
